@@ -1,0 +1,704 @@
+\documentclass[12pt]{article}
+
+\usepackage{graphicx}
+\usepackage{paralist}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{hhline}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{multicol}
+
+\oddsidemargin 0mm
+\evensidemargin 0mm
+\textwidth 160mm
+\textheight 200mm
+\renewcommand\baselinestretch{1.0}
+
+\pagestyle {plain}
+\pagenumbering{arabic}
+
+\newcounter{stepnum}
+
+\title{Assignment 4, Specification}
+\author{SFWR ENG 2AA4}
+
+\begin {document}
+
+\maketitle
+
+The purpose of this assignment is to design and specify a module (or modules) to store 
+the state of a game of Freecell. $\mathbb{N}$ numbers in this specification include the 
+number 0.
+
+\newpage
+
+\section* {Types Module}
+
+\subsection*{Module}
+
+Types
+
+\subsection* {Uses}
+
+N/A
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Constants}
+
+None
+
+\subsubsection* {Exported Types}
+
+suit = \{spades, clubs, hearts, diamonds\}\\ 
+face = \{ace, two, three, four, five, six, seven, eight, nine, ten, jack, queen, king\}\\
+colour = \{red, black\}
+
+\subsubsection* {Exported Access Programs}
+
+None
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+None
+
+\subsubsection* {State Invariant}
+
+None
+
+\newpage
+
+\section* {Constants Module}
+
+\subsection*{Module}
+
+Constants
+
+\subsection* {Uses}
+
+N/A
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Constants}
+
+SUITS = 4\\
+FACES = 13\\
+FREECELLS = 4\\
+HOMECELLS = 4\\
+GAMECELLS = 8\\
+CARDS = 52
+
+\subsubsection* {Exported Types}
+
+\subsubsection* {Exported Access Programs}
+
+None
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+None
+
+\subsubsection* {State Invariant}
+
+None
+
+\newpage
+
+\section* {Card Module}
+
+\subsection*{Template Module}
+
+Card
+
+\subsection* {Uses}
+
+Types
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+Card = ? 
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+	\hline
+	\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+	\hline
+	Card & suit, face & Card & \\
+	\hline
+	getSuit & ~ & suit & ~\\
+	\hline
+	getFace & ~ & face & ~\\
+	\hline
+	getColour & ~ & colour & ~\\
+	\hline
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$s$: suit\\
+$f$: face\\
+$c$: colour
+
+\subsubsection* {State Invariant}
+
+None
+
+\subsubsection* {Assumptions}
+
+The constructor Card is called for each object instance before any other
+access routine is called for that object.  The constructor cannot be called on
+an existing object.
+
+\subsubsection* {Access Routine Semantics}
+
+Card($x, y$):
+\begin{itemize}
+	\item transition: $s,f$ := $x,y, ((s = clubs \lor s = spades) \implies c = black \lor (s = hearts \lor s =diamonds) \implies c = red)$ 
+	\item output: $out := \mathit{self}$
+	\item exception: None
+\end{itemize}
+
+\noindent getSuit():
+\begin{itemize}
+	\item output: $out := s$
+	\item exception: None
+\end{itemize}
+
+\noindent getFace():
+\begin{itemize}
+	\item output: $out := f$
+	\item exception: None
+\end{itemize}
+
+\noindent getColour():
+\begin{itemize}
+	\item output: $out := c$
+	\item exception: None
+\end{itemize}
+
+\newpage
+
+\section* {Deck Module}
+
+\subsection*{Template Module}
+
+Deck
+
+\subsection* {Uses}
+
+Card\\
+Types\\
+Constants
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+Deck = ? 
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+	\hline
+	\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+	\hline
+	Deck & ~ & Deck & \\
+	\hline
+	shuffle & ~ & ~ & ~\\
+	\hline
+	getCard & $\mathbb{Z}$ & Card & outside\_bounds\\
+	\hline
+
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$d$: Card[]\\
+
+
+\subsubsection* {State Invariant}
+
+None
+
+\subsubsection* {Assumptions}
+
+None
+
+\subsubsection* {Access Routine Semantics}
+
+Deck():
+\begin{itemize}
+	\item transition: $d$ := $\forall( i : suit|i \in suit : \forall(j : face|j \in face : d || card(i,j)))$ 
+	\item output: $out := \mathit{self}$
+	\item exception: None
+\end{itemize}
+
+\noindent shuffle():
+\begin{itemize}
+	\item transition: $d$ := $\forall(i : \mathbb{N}| i \in [0..CARDS-1], j \in [0..CARDS-1] : swap(d[i],d[j]))$
+	\item output: None
+	\item exception: None
+\end{itemize}
+
+\noindent getCard(i):
+\begin{itemize}
+	\item output: $out := d[i]$
+	\item exception: exc := ($\lnot$(0 $\le$ i $\le$ CARDS) $\implies$ outside\_bounds)
+\end{itemize}
+
+\subsection* {Local Functions}
+swap: 
+
+swap(i,j) = (d[i] = d[j], d[j] = d[i])
+
+
+\newpage
+
+\section* {Freecell Module}
+
+\subsection*{Template Module}
+
+Freecell
+
+\subsection* {Uses}
+
+Card\\
+Types
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+Freecell = ? 
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+	\hline
+	\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+	\hline
+	Freecell & ~ & Freecell & \\
+	\hline
+	isOcupied & ~ & $\mathbb{B}$ & ~\\
+	\hline
+	getC & ~ & Card & ~\\
+	\hline
+	setC & Card & ~ & invalid\_move\\
+	\hline
+	clear & ~ & ~ & outside\_bounds\\
+	\hline
+	isValid & ~ & $\mathbb{B}$ & ~\\
+	\hline
+	
+	
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$c$: Card[]\\
+
+
+\subsubsection* {State Invariant}
+
+None
+
+\subsubsection* {Assumptions}
+
+The freecell can only ever have one card in it.
+
+\subsubsection* {Access Routine Semantics}
+
+Freecell():
+\begin{itemize}
+	\item transition: None
+	\item output: $out := \mathit{self}$
+	\item exception: None
+\end{itemize}
+
+\noindent isOcupied():
+\begin{itemize}
+	\item output: $\exists x : Card | x \in c$
+	\item exception: None
+\end{itemize}
+
+\noindent getC():
+\begin{itemize}
+	\item output: $out := c$
+	\item exception: exc := ($\lnot$(isOcupied()) $\implies$ outside\_bounds)
+\end{itemize}
+
+\noindent setC(cs : Card):
+\begin{itemize}
+	\item transition: c := cs
+	\item exception: exc := (isOcupied()$\implies$ outside\_bounds)
+\end{itemize}
+
+\noindent clear():
+\begin{itemize}
+	\item transition: c := $\epsilon$
+	\item exception: exc := ($\lnot$(isOcupied()) $\implies$ outside\_bounds)
+\end{itemize}
+
+\noindent isValid():
+\begin{itemize}
+	\item output: $out := (\lnot(isOcupied))$
+	\item exception: exc := None
+\end{itemize}
+
+\newpage
+
+\section* {Homecell Module}
+
+\subsection*{Template Module}
+
+Homecell
+
+\subsection* {Uses}
+
+Card\\
+Types
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+Homecell = ? 
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+	\hline
+	\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+	\hline
+	Homecell & ~ & Homecell & \\
+	\hline
+	addCard & Card & ~ & invalid\_move\\
+	\hline
+	removeCard & ~ & ~ & outside\_bounds\\
+	\hline
+	getCurrentCard & ~ & $\mathbb{N}$ & ~\\
+	\hline
+	size & ~ & $\mathbb{N}$ & ~\\
+	\hline
+	top & ~ & Card & outside\_bounds\\
+	\hline
+	isValid & Card & $\mathbb{B}$ & ~\\
+	\hline
+	
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$h$: Card[]\\
+$currentCard$: $\mathbb{N}$
+
+\subsubsection* {State Invariant}
+
+None
+
+\subsubsection* {Assumptions}
+
+None
+
+\subsubsection* {Access Routine Semantics}
+
+Homecell():
+\begin{itemize}
+	\item transition: currentCard := 0
+	\item output: $out := \mathit{self}$
+	\item exception: None
+\end{itemize}
+
+\noindent addCard(c : Card):
+\begin{itemize}
+	\item transition: h $||$ c
+	\item exception: ($\lnot$isValid(c) $\implies$ invalid\_move)
+\end{itemize}
+
+\noindent removeCard():
+\begin{itemize}
+	\item transition: h $\backslash$ h[$|$h$|$-1]
+	\item exception: exc := ((h.size() == 0) $\implies$ outside\_bounds)
+\end{itemize}
+
+\noindent getCurrentCard():
+\begin{itemize}
+	\item output: currentCard
+	\item exception: None
+\end{itemize}
+
+\noindent size():
+\begin{itemize}
+	\item output: $|$h$|$
+	\item exception: None
+\end{itemize}
+
+\noindent top():
+\begin{itemize}
+	\item output: h[$|$h$|$-1]
+	\item exception: ((h.size() == 0) $\implies$ outside\_bounds)
+\end{itemize}
+
+\noindent isValid(c : Card):
+\begin{itemize}
+	\item output: $out := (currentCard == c.getFace() \land (currentCard == 0 \lor h.top.getSuit == c.getSuit))$
+	\item exception: exc := None
+\end{itemize}
+
+\newpage
+
+\section* {Gamecell Module}
+
+\subsection*{Template Module}
+
+Gamecell
+
+\subsection* {Uses}
+
+Card\\
+Types
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+Gamecell = ? 
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+	\hline
+	\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+	\hline
+	Gamecell & ~ & Gamecell & \\
+	\hline
+	addCard & Card & ~ & invalid\_move\\
+	\hline
+	removeCard & ~ & ~ & outside\_bounds\\
+	\hline
+	forceAdd & Card & ~ & ~\\
+	\hline
+	size & ~ & $\mathbb{N}$ & ~\\
+	\hline
+	top & ~ & Card & outside\_bounds\\
+	\hline
+	isValid & Card & $\mathbb{B}$ & ~\\
+	\hline
+	
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$g$: Card[]\\
+
+\subsubsection* {State Invariant}
+
+None
+
+\subsubsection* {Assumptions}
+
+None
+
+\subsubsection* {Access Routine Semantics}
+
+Gamecell():
+\begin{itemize}
+	\item transition: None
+	\item output: $out := \mathit{self}$
+	\item exception: None
+\end{itemize}
+
+\noindent addCard(c : Card):
+\begin{itemize}
+	\item transition: g $||$ c
+	\item exception: ($\lnot$isValid(c) $\implies$ invalid\_move)
+\end{itemize}
+
+\noindent removeCard():
+\begin{itemize}
+	\item transition: g $\backslash$ g[$|$g$|$-1]
+	\item exception: exc := ((g.size() == 0) $\implies$ outside\_bounds)
+\end{itemize}
+
+\noindent forceAdd(c : Card):
+\begin{itemize}
+	\item transition: g $||$ c
+	\item exception: None
+\end{itemize}
+
+\noindent size():
+\begin{itemize}
+	\item output: $|$g$|$
+	\item exception: None
+\end{itemize}
+
+\noindent top():
+\begin{itemize}
+	\item output: g[$|$g$|$-1]
+	\item exception: ((g.size() == 0) $\implies$ outside\_bounds)
+\end{itemize}
+
+\noindent isValid(c : Card):
+\begin{itemize}
+	\item output: $out := \forall(i : face| i \in f: size() == 0 \lor top.getFace() - i == 1)$
+	\item exception: exc := None
+\end{itemize}
+
+\newpage
+
+\section* {Gameboard Module}
+
+\subsection*{Template Module}
+
+Gameboard
+
+\subsection* {Uses}
+
+Freecell\\
+Homecell\\
+Gamecel\\
+Deck\\
+Card\\
+Types\\
+Constant\
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+Gameboard = ? 
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+	\hline
+	\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+	\hline
+	Gameboard & ~ & Gameboard & \\
+	\hline
+	populateBoard & Deck & ~ &~\\
+	\hline
+	checkForWin & ~ & $\mathbb{B}$ & ~\\
+	\hline
+	checkForValidMove & ~ & $\mathbb{B}$ & ~\\
+	\hline
+	gameToGame &  $\mathbb{N}$ , $\mathbb{N}$  & ~ & invalid\_move\\
+	\hline
+	gameToFree &  $\mathbb{N}$ , $\mathbb{N}$  & ~ & invalid\_move\\
+	\hline
+	gameToHome &  $\mathbb{N}$ , $\mathbb{N}$  & ~ & invalid\_move\\
+	\hline
+	homeToFree &  $\mathbb{N}$ , $\mathbb{N}$  & ~ & invalid\_move\\
+	\hline
+	homeToGame &  $\mathbb{N}$ , $\mathbb{N}$  & ~ & invalid\_move\\
+	\hline	
+	freeToGame &  $\mathbb{N}$ , $\mathbb{N}$  & ~ & invalid\_move\\
+	\hline
+	freeToHome &  $\mathbb{N}$ , $\mathbb{N}$  & ~ & invalid\_move\\
+	\hline
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$fCells$: Freecell[FREECELLS]\\
+$hCells$: Homecell[HOMECELLS]\\
+$gCells$: Gamecell[GAMECELLS]
+
+\subsubsection* {State Invariant}
+
+None
+
+\subsubsection* {Assumptions}
+
+None
+
+\subsubsection* {Access Routine Semantics}
+
+Gameboard():
+\begin{itemize}
+	\item transition: None
+	\item output: $out := \mathit{self}$
+	\item exception: None
+\end{itemize}
+
+\noindent populateBoard(d : Deck):
+\begin{itemize}
+	\item transition: $\forall(i : Card | i \in d : gCells[i \mod GAMECELLS].forceAdd(d.getCard(i)))$
+	\item exception: None
+\end{itemize}
+
+\noindent checkForWin():
+\begin{itemize}
+	\item output: $out := \forall(i : Homecell | i \in hCells : i.size == FACES)$
+	\item exception: exc := None
+\end{itemize}
+
+\noindent checkForValidMove():
+\begin{itemize}
+	\item output: Didn't get around to it sorry friend
+	\item exception: None
+\end{itemize}
+
+\noindent gameToGame(i : $\mathbb{N}$, j : $\mathbb{N}$):
+\begin{itemize}
+	\item transistion: gCell[j].addCard(gCell[i].top())\\ gCell[i].removeCard()
+	\item exception: ($\lnot$(0 $\le$ i $\le GAMECELLS$ $\lor$ 0 $\le$ j $\le GAMECELLS$)$\implies$ invalid\_move)
+\end{itemize}
+
+\noindent gameToFree(i : $\mathbb{N}$, j : $\mathbb{N}$):
+\begin{itemize}
+	\item transistion: fCell[j].addCard(gCell[i].top())\\ fCell[i].clear()
+	\item exception: ($\lnot$(0 $\le$ i $\le GAMECELLS$ $\lor$ 0 $\le$ j $\le FREECELLS$)$\implies$ invalid\_move)
+\end{itemize}
+
+\noindent gameToHome(i : $\mathbb{N}$, j : $\mathbb{N}$):
+\begin{itemize}
+	\item transistion: hCell[j].addCard(gCell[i].top())\\ hCell[i].removeCard()
+	\item exception: ($\lnot$(0 $\le$ i $\le GAMECELLS$ $\lor$ 0 $\le$ j $\le HOMECELLS$)$\implies$ invalid\_move)
+\end{itemize}
+
+\noindent homeToFree(i : $\mathbb{N}$, j : $\mathbb{N}$):
+\begin{itemize}
+	\item transistion: fCell[j].addCard(hCell[i].top())\\ fCell[i].clear()
+	\item exception: ($\lnot$(0 $\le$ i $\le HOMECELLS$ $\lor$ 0 $\le$ j $\le FREECELLS$)$\implies$ invalid\_move)
+\end{itemize}
+
+\noindent homeToGame(i : $\mathbb{N}$, j : $\mathbb{N}$):
+\begin{itemize}
+	\item transistion: gCell[j].addCard(hCell[i].top())\\ hCell[i].removeCard()
+	\item exception: ($\lnot$(0 $\le$ i $\le HOMECELLS$ $\lor$ 0 $\le$ j $\le GAMECELLS$)$\implies$ invalid\_move)
+\end{itemize}
+
+\noindent freeToGame(i : $\mathbb{N}$, j : $\mathbb{N}$):
+\begin{itemize}
+	\item transistion: gCell[j].addCard(fCell[i].getC())\\ fCell[i].removeCard()
+	\item exception: ($\lnot$(0 $\le$ i $\le FREECELLS$ $\lor$ 0 $\le$ j $\le GAMECELLS$)$\implies$ invalid\_move)
+\end{itemize}
+
+\noindent freeToHome(i : $\mathbb{N}$, j : $\mathbb{N}$):
+\begin{itemize}
+	\item transistion: hCell[j].addCard(fCell[i].getC())\\ fCell[i].clear()
+	\item exception: ($\lnot$(0 $\le$ i $\le FREECELL$ $\lor$ 0 $\le$ j $\le HOMECELLS$)$\implies$ invalid\_move)
+\end{itemize}
+\end {document}
